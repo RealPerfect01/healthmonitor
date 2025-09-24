@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HelpCenterPage extends StatelessWidget {
   const HelpCenterPage({super.key});
@@ -29,19 +30,28 @@ class HelpCenterPage extends StatelessWidget {
 
   Widget _buildFAQ(BuildContext context) {
     return Card(
-      elevation: 4,
       child: ExpansionTile(
         leading: const Icon(Icons.question_answer),
-        title: const Text('Frequently Asked Questions'),
+        title: Text('Frequently Asked Questions', style: Theme.of(context).textTheme.bodyLarge),
         children: <Widget>[
           ListTile(
-            title: const Text('How do I reset my password?'),
-            subtitle: const Text('Go to Settings > Security > Change Password.'),
+            title: Text('How do I reset my password?', style: Theme.of(context).textTheme.bodyMedium),
+            subtitle: Text('Go to Settings > Security > Change Password.', style: Theme.of(context).textTheme.bodySmall),
             onTap: () {},
           ),
           ListTile(
-            title: const Text('How do I change the theme?'),
-            subtitle: const Text('Go to Settings > Theme and select your preferred theme.'),
+            title: Text('How do I change the theme?', style: Theme.of(context).textTheme.bodyMedium),
+            subtitle: Text('Go to Settings > Theme and select your preferred theme.', style: Theme.of(context).textTheme.bodySmall),
+            onTap: () {},
+          ),
+          ListTile(
+            title: Text('How do I enable notifications?', style: Theme.of(context).textTheme.bodyMedium),
+            subtitle: Text('Go to Settings > Notifications and toggle the switch.', style: Theme.of(context).textTheme.bodySmall),
+            onTap: () {},
+          ),
+          ListTile(
+            title: Text('How do I view a patient\'s details?', style: Theme.of(context).textTheme.bodyMedium),
+            subtitle: Text('Tap on a patient\'s card in the patient list.', style: Theme.of(context).textTheme.bodySmall),
             onTap: () {},
           ),
         ],
@@ -51,25 +61,42 @@ class HelpCenterPage extends StatelessWidget {
 
   Widget _buildContactSupport(BuildContext context) {
     return Card(
-      elevation: 4,
-      child: ListTile(
-        leading: const Icon(Icons.contact_support),
-        title: const Text('Contact Support'),
-        onTap: () {
-          // Handle contact support action
-        },
+      child: Column(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.contact_support),
+            title: Text('Contact Support', style: Theme.of(context).textTheme.bodyLarge),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.email),
+                onPressed: () => _launchURL('mailto:support@example.com'),
+              ),
+              IconButton(
+                icon: const Icon(Icons.public), // Placeholder for a generic social media icon
+                onPressed: () => _launchURL('https://x.com/flutterdev'),
+              ),
+              IconButton(
+                icon: const Icon(Icons.facebook),
+                onPressed: () => _launchURL('https://facebook.com/flutterdev'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+        ],
       ),
     );
   }
 
   Widget _buildReportBug(BuildContext context) {
     return Card(
-      elevation: 4,
       child: ListTile(
         leading: const Icon(Icons.bug_report),
-        title: const Text('Report a Bug'),
+        title: Text('Report a Bug', style: Theme.of(context).textTheme.bodyLarge),
         onTap: () {
-          // Handle report a bug action
+          _showFeedbackDialog(context, 'Report a Bug');
         },
       ),
     );
@@ -77,14 +104,68 @@ class HelpCenterPage extends StatelessWidget {
 
   Widget _buildSendFeedback(BuildContext context) {
     return Card(
-      elevation: 4,
       child: ListTile(
         leading: const Icon(Icons.feedback),
-        title: const Text('Send Feedback'),
+        title: Text('Send Feedback', style: Theme.of(context).textTheme.bodyLarge),
         onTap: () {
-          // Handle send feedback action
+          _showFeedbackDialog(context, 'Send Feedback');
         },
       ),
     );
+  }
+
+  void _showFeedbackDialog(BuildContext context, String title) {
+    final formKey = GlobalKey<FormState>();
+    final feedbackController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Form(
+            key: formKey,
+            child: TextFormField(
+              controller: feedbackController,
+              decoration: const InputDecoration(labelText: 'Your feedback'),
+              maxLines: 5,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your feedback';
+                }
+                return null;
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  // Implement feedback submission logic here
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Thank you for your feedback!')),
+                  );
+                }
+              },
+              child: const Text('Submit'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri)) {
+      throw 'Could not launch $url';
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/app_colors.dart';
 import 'package:myapp/patient_detail_page.dart';
 import 'package:myapp/models/patient.dart';
 
@@ -103,6 +104,10 @@ class _PatientListPageState extends State<PatientListPage> {
           });
         }
       },
+      selectedColor: AppColors.primary,
+      labelStyle: TextStyle(
+        color: _selectedFilter == filter ? Colors.white : AppColors.textPrimary,
+      ),
     );
   }
 
@@ -112,13 +117,15 @@ class _PatientListPageState extends State<PatientListPage> {
       itemBuilder: (context, index) {
         final patient = _filteredPatients[index];
         return Card(
-          margin: const EdgeInsets.symmetric(vertical: 8.0),
           child: ListTile(
             leading: CircleAvatar(
               backgroundImage: patient.profilePhotoUrl != null ? AssetImage(patient.profilePhotoUrl!) : null,
             ),
-            title: Text(patient.name),
-            subtitle: Text('${patient.condition} - Last update: ${patient.lastUpdate?.toLocal()}'),
+            title: Text(patient.name, style: Theme.of(context).textTheme.bodyLarge),
+            subtitle: Text(
+              '${patient.condition} - Last update: ${patient.lastUpdate?.toLocal()}',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
             trailing: Text(patient.status, style: TextStyle(color: _getStatusColor(patient.status))),
             onTap: () {
               Navigator.push(
@@ -137,11 +144,11 @@ class _PatientListPageState extends State<PatientListPage> {
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Critical':
-        return Colors.red;
+        return AppColors.alert;
       case 'Warning':
-        return Colors.orange;
+        return AppColors.accent;
       case 'Stable':
-        return Colors.green;
+        return AppColors.secondary;
       default:
         return Colors.grey;
     }

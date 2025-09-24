@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/app_theme.dart';
 import 'package:myapp/help_center_page.dart';
 import 'package:myapp/login_screen.dart';
 import 'package:myapp/models/patient.dart';
+import 'package:myapp/notification_service.dart';
+import 'package:myapp/patient_detail_page.dart';
 import 'package:myapp/patient_list_page.dart';
 import 'package:myapp/settings_page.dart';
 import 'package:myapp/splash_screen.dart';
 import 'package:myapp/theme_provider.dart';
-import 'package:myapp/vitals_trends_page.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+final NotificationService notificationService = NotificationService();
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await notificationService.init();
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
@@ -27,14 +33,13 @@ class MyApp extends StatelessWidget {
       builder: (context, themeProvider, child) {
         return MaterialApp(
           title: 'Flutter Demo',
-          theme: ThemeData.light(),
-          darkTheme: ThemeData.dark(),
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
           home: const SplashScreen(),
           routes: {
             '/login': (context) => const LoginScreen(),
             '/patientList': (context) => const PatientListPage(),
-            '/vitalsTrends': (context) => const VitalsTrendsPage(),
             '/settings': (context) => const SettingsPage(),
             '/helpCenter': (context) => const HelpCenterPage(),
           },
@@ -97,14 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Patient Vitals'),
+        title: const Text('Patient List'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.trending_up),
-            onPressed: () {
-              Navigator.pushNamed(context, '/vitalsTrends');
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
@@ -132,12 +131,6 @@ class _MyHomePageState extends State<MyHomePage> {
             Expanded(child: _buildPatientList()),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/patientList');
-        },
-        child: const Icon(Icons.list),
       ),
     );
   }
@@ -214,6 +207,14 @@ class _MyHomePageState extends State<MyHomePage> {
             title: Text(patient.name),
             subtitle: Text(patient.condition),
             trailing: Text(patient.status, style: TextStyle(color: _getStatusColor(patient.status))),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PatientDetailPage(patient: patient),
+                ),
+              );
+            },
           ),
         );
       },

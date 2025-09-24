@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/theme_provider.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  bool _notificationsEnabled = true;
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +38,9 @@ class SettingsPage extends StatelessWidget {
 
   Widget _buildProfileSettings(BuildContext context) {
     return Card(
-      elevation: 4,
       child: ListTile(
         leading: const Icon(Icons.person),
-        title: const Text('Profile Settings'),
+        title: Text('Profile Settings', style: Theme.of(context).textTheme.bodyLarge),
         onTap: () {
           // Navigate to profile settings page
         },
@@ -44,13 +50,17 @@ class SettingsPage extends StatelessWidget {
 
   Widget _buildNotificationPreferences(BuildContext context) {
     return Card(
-      elevation: 4,
       child: SwitchListTile(
         secondary: const Icon(Icons.notifications),
-        title: const Text('Enable Notifications'),
-        value: true, // Replace with actual notification preference
+        title: Text('Enable Notifications', style: Theme.of(context).textTheme.bodyLarge),
+        value: _notificationsEnabled, // Replace with actual notification preference
         onChanged: (bool value) {
-          // Handle notification preference change
+          setState(() {
+            _notificationsEnabled = value;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Notifications ${value ? 'enabled' : 'disabled'}')),
+          );
         },
       ),
     );
@@ -59,51 +69,42 @@ class SettingsPage extends StatelessWidget {
   Widget _buildThemeSettings(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Card(
-      elevation: 4,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Theme', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            ListTile(
-              title: const Text('Light Mode'),
-              leading: Radio<ThemeMode>(
-                value: ThemeMode.light,
-                groupValue: themeProvider.themeMode,
-                onChanged: (ThemeMode? value) {
-                  if (value != null) {
-                    themeProvider.setThemeMode(value);
-                  }
-                },
-              ),
-              onTap: () => themeProvider.setThemeMode(ThemeMode.light),
-            ),
-            ListTile(
-              title: const Text('Dark Mode'),
-              leading: Radio<ThemeMode>(
-                value: ThemeMode.dark,
-                groupValue: themeProvider.themeMode,
-                onChanged: (ThemeMode? value) {
-                  if (value != null) {
-                    themeProvider.setThemeMode(value);
-                  }
-                },
-              ),
-              onTap: () => themeProvider.setThemeMode(ThemeMode.dark),
-            ),
-            ListTile(
-              title: const Text('System Default'),
-              leading: Radio<ThemeMode>(
-                value: ThemeMode.system,
-                groupValue: themeProvider.themeMode,
-                onChanged: (ThemeMode? value) {
-                  if (value != null) {
-                    themeProvider.setThemeMode(value);
-                  }
-                },
-              ),
-              onTap: () => themeProvider.setThemeMode(ThemeMode.system),
+            Text('Theme', style: Theme.of(context).textTheme.displaySmall),
+            const SizedBox(height: 16),
+            ToggleButtons(
+              isSelected: [
+                themeProvider.themeMode == ThemeMode.light,
+                themeProvider.themeMode == ThemeMode.dark,
+                themeProvider.themeMode == ThemeMode.system,
+              ],
+              onPressed: (int index) {
+                if (index == 0) {
+                  themeProvider.setThemeMode(ThemeMode.light);
+                } else if (index == 1) {
+                  themeProvider.setThemeMode(ThemeMode.dark);
+                } else {
+                  themeProvider.setThemeMode(ThemeMode.system);
+                }
+              },
+              children: const [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text('Light'),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text('Dark'),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text('System'),
+                ),
+              ],
             ),
           ],
         ),
@@ -113,25 +114,104 @@ class SettingsPage extends StatelessWidget {
 
   Widget _buildSecuritySettings(BuildContext context) {
     return Card(
-      elevation: 4,
       child: Column(
         children: [
           ListTile(
             leading: const Icon(Icons.lock),
-            title: const Text('Change Password'),
+            title: Text('Change Password', style: Theme.of(context).textTheme.bodyLarge),
             onTap: () {
-              // Navigate to change password page
+              _showChangePasswordDialog(context);
             },
           ),
           ListTile(
             leading: const Icon(Icons.security),
-            title: const Text('Enable 2-Factor Authentication'),
+            title: Text('Enable 2-Factor Authentication', style: Theme.of(context).textTheme.bodyLarge),
             onTap: () {
               // Navigate to 2FA page
             },
           ),
         ],
       ),
+    );
+  }
+
+  void _showChangePasswordDialog(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final currentPasswordController = TextEditingController();
+    final newPasswordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Change Password'),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: currentPasswordController,
+                  decoration: const InputDecoration(labelText: 'Current Password'),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your current password';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: newPasswordController,
+                  decoration: const InputDecoration(labelText: 'New Password'),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a new password';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: confirmPasswordController,
+                  decoration: const InputDecoration(labelText: 'Confirm New Password'),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please confirm your new password';
+                    }
+                    if (value != newPasswordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  // Implement password change logic here
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Password changed successfully')),
+                  );
+                }
+              },
+              child: const Text('Change'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
