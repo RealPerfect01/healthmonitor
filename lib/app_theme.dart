@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:myapp/app_colors.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
+    final colorScheme = const ColorScheme.light(
+      primary: Colors.deepPurple,
+      secondary: Colors.teal,
+      error: Colors.red,
+      surface: Colors.white,
+      onPrimary: Colors.white,
+    );
     return ThemeData(
-      primaryColor: AppColors.primary,
-      colorScheme: const ColorScheme.light(
-        primary: AppColors.primary,
-        secondary: AppColors.secondary,
-        error: AppColors.alert,
-        surface: AppColors.backgroundLight,
-      ),
-      scaffoldBackgroundColor: AppColors.backgroundLight,
-      textTheme: _textTheme(AppColors.textPrimary, AppColors.textSecondary),
+      primaryColor: colorScheme.primary,
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: colorScheme.surface,
+      textTheme: _textTheme(Colors.black, Colors.grey),
       cardTheme: CardThemeData(
         elevation: 4,
         shape: RoundedRectangleBorder(
@@ -21,25 +22,27 @@ class AppTheme {
         ),
         shadowColor: Colors.black.withAlpha(25),
         margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-        color: AppColors.backgroundLight,
+        color: colorScheme.surface,
       ),
       buttonTheme: _buttonTheme(),
-      elevatedButtonTheme: _elevatedButtonTheme(),
-      appBarTheme: _appBarTheme(AppColors.primary, Colors.white),
+      elevatedButtonTheme: _elevatedButtonTheme(colorScheme),
+      appBarTheme: _appBarTheme(colorScheme.primary, Colors.white),
     );
   }
 
   static ThemeData get darkTheme {
+    final colorScheme = const ColorScheme.dark(
+      primary: Colors.deepPurple,
+      secondary: Colors.teal,
+      error: Colors.red,
+      surface: Color(0xFF121212),
+      onPrimary: Colors.white,
+    );
     return ThemeData(
-      primaryColor: AppColors.primary,
-      colorScheme: const ColorScheme.dark(
-        primary: AppColors.primary,
-        secondary: AppColors.secondary,
-        error: AppColors.alert,
-        surface: AppColors.backgroundDark,
-      ),
-      scaffoldBackgroundColor: AppColors.backgroundDark,
-      textTheme: _textTheme(AppColors.textOnDark, AppColors.textSecondary),
+      primaryColor: colorScheme.primary,
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: colorScheme.surface,
+      textTheme: _textTheme(Colors.white, Colors.grey),
       cardTheme: CardThemeData(
         elevation: 4,
         shape: RoundedRectangleBorder(
@@ -47,11 +50,11 @@ class AppTheme {
         ),
         shadowColor: Colors.black.withAlpha(51),
         margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-        color: AppColors.backgroundDark,
+        color: colorScheme.surface,
       ),
       buttonTheme: _buttonTheme(),
-      elevatedButtonTheme: _elevatedButtonTheme(),
-      appBarTheme: _appBarTheme(AppColors.backgroundDark, AppColors.textOnDark),
+      elevatedButtonTheme: _elevatedButtonTheme(colorScheme),
+      appBarTheme: _appBarTheme(colorScheme.surface, Colors.white),
     );
   }
 
@@ -76,7 +79,7 @@ class AppTheme {
     );
   }
 
-  static ElevatedButtonThemeData _elevatedButtonTheme() {
+  static ElevatedButtonThemeData _elevatedButtonTheme(ColorScheme colorScheme) {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
@@ -84,6 +87,8 @@ class AppTheme {
         ),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
       ),
     );
   }

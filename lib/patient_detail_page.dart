@@ -2,9 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math';
+import 'package:provider/provider.dart';
 
-import 'package:myapp/app_colors.dart';
 import 'package:myapp/models/patient.dart';
+import 'package:myapp/theme_provider.dart';
 
 class PatientDetailPage extends StatefulWidget {
   final Patient patient;
@@ -20,29 +21,49 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.patient.name),
+        actions: [
+          IconButton(
+            icon: Icon(themeProvider.themeMode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode),
+            onPressed: () => themeProvider.toggleTheme(),
+            tooltip: 'Toggle Theme',
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _buildPatientInfo(),
-            const SizedBox(height: 24),
-            _buildLiveVitals(),
-            const SizedBox(height: 24),
-            _buildVitalsTrends(),
-            const SizedBox(height: 24),
-            _buildNotesSection(),
-            const SizedBox(height: 24),
-            _buildMedications(),
-            const SizedBox(height: 24),
-            _buildAlertStatus(),
-            const SizedBox(height: 24),
-            _buildConnectedDevices(),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).colorScheme.primary.withAlpha(25),
+              Theme.of(context).colorScheme.secondary.withAlpha(25),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _buildPatientInfo(),
+              const SizedBox(height: 24),
+              _buildLiveVitals(),
+              const SizedBox(height: 24),
+              _buildVitalsTrends(),
+              const SizedBox(height: 24),
+              _buildNotesSection(),
+              const SizedBox(height: 24),
+              _buildMedications(),
+              const SizedBox(height: 24),
+              _buildAlertStatus(),
+              const SizedBox(height: 24),
+              _buildConnectedDevices(),
+            ],
+          ),
         ),
       ),
     );
@@ -50,6 +71,8 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
 
   Widget _buildPatientInfo() {
     return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
@@ -64,10 +87,10 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Age: 35', style: Theme.of(context).textTheme.bodyLarge),
-                Text('Gender: Male', style: Theme.of(context).textTheme.bodyLarge),
-                Text('ID: 123456', style: Theme.of(context).textTheme.bodyLarge),
-                Text('Contact: 555-1234', style: Theme.of(context).textTheme.bodyLarge),
+                Text('Age: 35', style: Theme.of(context).textTheme.titleMedium),
+                Text('Gender: Male', style: Theme.of(context).textTheme.titleMedium),
+                Text('ID: 123456', style: Theme.of(context).textTheme.titleMedium),
+                Text('Contact: 555-1234', style: Theme.of(context).textTheme.titleMedium),
               ],
             ),
           ],
@@ -78,12 +101,14 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
 
   Widget _buildLiveVitals() {
     return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Live Vitals', style: Theme.of(context).textTheme.displaySmall),
+            Text('Live Vitals', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             const Wrap(
               spacing: 16,
@@ -105,12 +130,14 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
 
   Widget _buildVitalsTrends() {
     return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Vitals Trends', style: Theme.of(context).textTheme.displaySmall),
+            Text('Vitals Trends', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             _buildTimeRangeFilter(),
             const SizedBox(height: 24),
@@ -153,9 +180,9 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
           });
         }
       },
-      selectedColor: AppColors.primary,
+      selectedColor: Theme.of(context).colorScheme.primary,
       labelStyle: TextStyle(
-        color: _selectedTimeRange == range ? Colors.white : AppColors.textPrimary,
+        color: _selectedTimeRange == range ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color,
       ),
     );
   }
@@ -165,7 +192,7 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.displaySmall),
+        Text(title, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 8),
         Text(
           'Standard Range: $minRange - $maxRange $unit',
@@ -179,8 +206,8 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
               gridData: FlGridData(
                 show: true,
                 getDrawingHorizontalLine: (value) {
-                  return const FlLine(
-                    color: AppColors.chartGrid,
+                  return FlLine(
+                    color: Theme.of(context).dividerColor,
                     strokeWidth: 1,
                   );
                 },
@@ -191,7 +218,7 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
                 LineChartBarData(
                   spots: _getChartData(minRange, maxRange),
                   isCurved: true,
-                  color: AppColors.chartLine,
+                  color: Theme.of(context).colorScheme.primary,
                   barWidth: 3,
                   isStrokeCapRound: true,
                   dotData: const FlDotData(show: false),
@@ -204,12 +231,12 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
                 horizontalLines: [
                   HorizontalLine(
                     y: maxRange,
-                    color: AppColors.chartAlertLine,
+                    color: Theme.of(context).colorScheme.error,
                     strokeWidth: 2,
                   ),
                   HorizontalLine(
                     y: minRange,
-                    color: AppColors.chartAlertLine,
+                    color: Theme.of(context).colorScheme.error,
                     strokeWidth: 2,
                   ),
                 ],
@@ -235,12 +262,14 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
 
   Widget _buildNotesSection() {
     return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Notes', style: Theme.of(context).textTheme.displaySmall),
+            Text('Notes', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(
               'Patient is responding well to treatment.',
@@ -254,12 +283,14 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
 
   Widget _buildMedications() {
     return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Medications', style: Theme.of(context).textTheme.displaySmall),
+            Text('Medications', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(
               'Aspirin, 81mg, daily',
@@ -273,11 +304,13 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
 
   Widget _buildAlertStatus() {
     return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            Text('Alert Status:', style: Theme.of(context).textTheme.displaySmall),
+            Text('Alert Status:', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(width: 16),
             Text(
               widget.patient.status,
@@ -295,12 +328,14 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
 
   Widget _buildConnectedDevices() {
     return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Connected Devices', style: Theme.of(context).textTheme.displaySmall),
+            Text('Connected Devices', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(
               'Apple Watch Series 9',
@@ -315,11 +350,11 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Critical':
-        return AppColors.alert;
+        return Colors.red;
       case 'Warning':
-        return AppColors.accent;
+        return Colors.amber;
       case 'Stable':
-        return AppColors.secondary;
+        return Colors.green;
       default:
         return Colors.grey;
     }
@@ -342,9 +377,9 @@ class VitalTile extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(name, style: Theme.of(context).textTheme.bodyLarge),
+          Text(name, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 4),
-          Text(value, style: Theme.of(context).textTheme.bodyMedium),
+          Text(value, style: Theme.of(context).textTheme.bodyLarge),
         ],
       ),
     );

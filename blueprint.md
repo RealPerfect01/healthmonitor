@@ -1,43 +1,29 @@
-
-# Project Blueprint
+# Health App Blueprint
 
 ## Overview
 
-This document outlines the style, design, and features of the Flutter application. It serves as a single source of truth for the project's current state and future development plans.
+This document outlines the plan, style, design, and features of the Health App. This application is designed for doctors and administrators to manage patient data and monitor their health status.
 
-## Current State
+## Style and Design
 
-### Style and Design
+The application follows a modern and clean design aesthetic, with a focus on usability and clarity.
 
-*   **Theme:** The application currently uses the default Flutter theme.
-*   **Fonts:** Default fonts are in use.
-*   **Colors:** Default color scheme.
+*   **Theme:** The app supports both light and dark themes, with a primary color of deep purple and a secondary color of teal.
+*   **Typography:** The app uses the Oswald and Roboto fonts for a clean and readable look.
+*   **Layout:** The app uses a consistent layout across all pages, with a focus on clear and intuitive navigation.
+*   **Icons:** The app uses Material Design icons to enhance usability and provide visual cues.
 
-### Features
+## Features
 
-*   **Initial Screen:** The application starts with the default Flutter home page.
+The application includes the following features:
 
-## Development Plan
+*   **Login:** Users can log in as an administrator or a doctor.
+*   **Admin Dashboard:** Administrators can create new doctors and patients.
+*   **Patient List:** Doctors can view a list of their assigned patients, with the ability to filter and search for specific patients.
+*   **Patient Details:** Doctors can view detailed information about a specific patient, including their live vitals, vital trends, notes, medications, and connected devices.
+*   **Profile Settings:** Users can update their profile information.
+*   **Theme Toggle:** Users can switch between light and dark themes.
 
-### Current Task: Implement Animated Splash Screen and Login Page
+## Current Plan
 
-**Objective:** Create an animated splash screen that displays the app logo for a few seconds before transitioning to a new login page.
-
-**Steps:**
-
-1.  **Asset Management:**
-    *   Create an `assets/images` directory for image assets.
-    *   Prompt the user to upload their logo (`logo.png`) to this directory.
-    *   Update `pubspec.yaml` to include the new asset directory.
-
-2.  **Create Splash Screen (`lib/splash_screen.dart`):**
-    *   Implement a `StatefulWidget` to handle animation and navigation.
-    *   The logo will have a fade-in and fade-out animation.
-    *   After a 3-second delay, the app will navigate to the login screen.
-
-3.  **Create Login Screen (`lib/login_screen.dart`):**
-    *   Implement a `StatelessWidget` as a placeholder for the login page.
-    *   It will display a simple "Login Page" message for now.
-
-4.  **Update `lib/main.dart`:**
-    *   Set the `SplashScreen` as the initial route (`home`) of the `MaterialApp`.
+The current plan is to continue to improve the UI of the application and add new features as needed. The next step is to remove the `app_colors.dart` file, since it is no longer needed.
