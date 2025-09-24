@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/profile_settings_page.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/theme_provider.dart';
 
@@ -42,7 +43,10 @@ class _SettingsPageState extends State<SettingsPage> {
         leading: const Icon(Icons.person),
         title: Text('Profile Settings', style: Theme.of(context).textTheme.bodyLarge),
         onTap: () {
-          // Navigate to profile settings page
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfileSettingsPage()),
+          );
         },
       ),
     );
