@@ -3,7 +3,6 @@ import 'package:myapp/app_theme.dart';
 import 'package:myapp/help_center_page.dart';
 import 'package:myapp/login_screen.dart';
 import 'package:myapp/models/patient.dart';
-import 'package:myapp/notification_service.dart';
 import 'package:myapp/patient_detail_page.dart';
 import 'package:myapp/patient_list_page.dart';
 import 'package:myapp/settings_page.dart';
@@ -11,11 +10,8 @@ import 'package:myapp/splash_screen.dart';
 import 'package:myapp/theme_provider.dart';
 import 'package:provider/provider.dart';
 
-final NotificationService notificationService = NotificationService();
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await notificationService.init();
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),

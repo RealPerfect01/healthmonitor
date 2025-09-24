@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:myapp/patient_list_page.dart';
-import 'package:myapp/notification_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,7 +14,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
-  final NotificationService _notificationService = NotificationService();
 
   void _login() {
     if (_formKey.currentState!.validate()) {
@@ -27,10 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
         if (!mounted) return;
         // Use a more robust authentication method in a real app
         if (_emailController.text == 'admin@test.com' && _passwordController.text == 'password') {
-          _notificationService.showNotification(
-            'Login Successful',
-            'Welcome back to the app!',
-          );
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const PatientListPage()),
